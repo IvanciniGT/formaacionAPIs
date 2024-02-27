@@ -412,3 +412,105 @@ En el mundo del testing también tenemos un acrónimo guay para los principios d
 - R: Repeatable. Siempre que se ejecute la prueba, debe dar el mismo resultado.
 - S: Self-Validating. La prueba debe comprobar todo lo que debe ocurrir para que se considere que ha pasado.
 - T: Timely. Debe hacerse en el momento adecuado. No antes, no después.
+
+---
+
+# Comunicaciones entre servicios
+
+## Síncronas
+
+El emisor (cliente) espera la respuesta del receptor (servidor) antes de continuar con su ejecución.
+
+## Asíncronas
+
+El emisor (cliente) no espera la respuesta del receptor (servidor) antes de continuar con su ejecución.
+
+Tengo un computador (TPV) en el mercadona... y cuando me pasan la compra, paso la tarjeta por el tpv.
+El tpv tiene dentro un programa que comunica con el banco de turno... oye! haz cargo de 300 billetes!
+El TPV espera respuesta? SI
+Si no se recibe respuesta, o la respuesta es negativa, no me dejan salir de la tienda.
+ESA COMUNICACION DEBE SER SINCRONA
+
+Tengo un computador (TPV) en la entrada de un peaje... y cuando salgo del peaje, paso la tarjeta por el tpv.
+El tpv tiene dentro un programa que comunica con una cola de mensajería... oye! marca que hay que hacer un cargo de 8 billetes!
+El TPV espera respuesta del banco? NO
+Y YO ME VOY
+Comunicación Asíncrona
+
+Qué podría pasar si la comunicación fuese síncrona?
+- Se acumularían coches... es eso un problema? NO tampoco lo es en el mercadona... más filas de caja
+- Qué pasa si he ha caído el banco? No puedo salir del peaje... y estoy sufriendo un infarto?
+ESO SI ES UN PROBLEMA !
+
+Además de requisitos funcionales...
+puede haber otro tipo de requisitos ue me inviten a tomar decisiones en este sentido:
+
+- Requisitos de rendimiento
+  Doy de alta el animal... y se debe mandar un email... Voy a esperar confirmación del servidor de emails?
+    Ni de coña... :
+        1. iría muy lento
+        2. Si el servidor está caído... no se da de alta el animal?
+    Simplemente anoto en un sistema que hay que mandar el email... ya alguien lo mandará cuando pueda
+
+- Qué me asegura la comunicación ASINCRONA Que no me asegura la SINCRONA? Entrega del mensaje
+    Si yo llamo por teléfono a mi madre para contarle algo... corro el riesgo de que mi madre no esté disponible... y en ese caso la comunicación no se ha podido efectuar...
+    Si acaso, deberé guardarme el mensaje en memoria... y reintentarlo más tarde.
+
+    En cambio si le mando un whatsapp... realmente no le mando el mensaje a mi madre... a quién se lo mando?
+    Al servidor de whatsapp... que recoge el mensaje y me confirma la recepción.
+    Cuando mi madre esté disponible, el servidor de whatsapp le entregará el mensaje.
+    Pero yo me olvido. Se que eso ocurrirá! Y no tengo que preocuparme de ello.
+
+    Operaciones críticas necesitan garantías de entrega... y eso lo da la comunicación asíncrona.
+
+    Tenemos servidores de mensajería: 
+    - RabbitMQ
+    - Kafka
+    Y los hay de 2 tipos:
+    - push: RabbitMQ: RabbitMQ manda el mensaje al receptor
+    - pull: Kafka:    El receptor va a buscar el mensaje al Kafka
+
+- En ocasiones usamos servidores de mensajería para DESACOPLAR servicios entre si.
+
+    Siguiendo el Principio SOLID DE RESPONSABILIDAD ÚNICA, mi misión es dar de alta un animal.
+    No se qué pasa después.
+    Ni me importa.
+    Lo único que hago es notificar un evento... NUEVO ANIMALITO-> COLA KAFKA
+    Habrá programas que les interese escuchar ese evento... y reaccionar en consecuencia.
+    1 o 7000... no me importa.
+    Cada vez que un programa necesite hacer algo cuando se da de alta un animal... simplemente se suscribirá a la cola del sistema de mensajería. Y preguntará (o le avisarán) cuando un animal se da de alta.... para hacer lo que tenga que hacer.
+Esto me permite crear software más desacoplado... más fácil de mantener... más fácil de escalar.
+Ahora hay que mandar también un SMS...
+No hay que tocar NADA del código que existe. ESTO ES BRUTAL !!!
+Hago un programa NUEVO, de CERO... que lea de la cola y envíe SMS... y listo.
+
+Si tengo que tocar el programa que da alta animales, para meter entre 2 lineas de código la llamada a la función de envío de SMS... que impacto tiene esto?
+- Nueva versión
+- Nuevas pruebas
+- Nuevo despliegue en producción
+- Riesgo de que haya cosas que dejen de funcionar
+- A lo mejor estamos en medio de una reestructuración del código de esa función... por tanto, dónde hago el cambio? 
+ -  En lo nuevo? Pues tendré que esperar a qué esté acabado para poder subir a producción
+ -  En lo viejo? Así subo ya... pero lo debo de copiar también al nuevo...
+FOLLON !!!!!
+
+
+# Validación de datos
+
+<----- FrontEnd -------------------->    <---------- Backend ---------------------------->
+Componente WEB           > Servicio   >  Controlador REST > Servicio > Repositorio  > BBDD
+Formulario Nuevo Cliente                                       *                      *
+ *                                       Controlador SOAP >                           Validación del tipo
+ Validación de costesía                                       Validación de negocio
+
+                                         En v1 del servicio, el tipo de animal: 1, 2, 3, 4
+                                         En v2 del servicio, el tipo de animal: perro, gato, loro, papagaio
+                                            ^^ ESTA VALIDACION A NIVEL DEL CONTROLADOR
+
+    Fecha de nacimiento de un animal
+    YO, en mi negocio! No puedo tener animales nacidos en el futuro.
+
+    Si tuviera un único sitio dónde validar el email cual sería?
+    La BBDD también tiene su responsabilidad... y su lógica.
+    Y si alguien le da por pasar como el culo de tu puñetero programa... y quiera hacer una query directa a la bbdd está leyendo un dato inválido
+    La BBDD es el último garante del dato.
