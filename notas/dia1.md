@@ -376,9 +376,12 @@ RECURSOS CONCRETOS: Pipo, Perico, Flupi, Lolo
 Un conjunto de PRINCIPIOS que nos ayudan a desarrollar software fácil de mantener y de evolucionar.
 - S: Single Responsability Principle
         Cada componente de mi aplicación debe tener una única responsabilidad.
-- O
-- L
-- I
+- O: Open/Closed Principle
+        Mi aplicación debe estar abierta a la extensión... pero cerrada a la modificación.
+- L: Liskov Substitution Principle
+        Si tengo un componente que hereda de otro... puedo sustituir el componente padre por el hijo sin que la aplicación se entere.
+- I: Interface Segregation Principle
+        Mejor muchas interfaces de propósito específico que una interfaz de propósito general.
 - D
 
 ---
