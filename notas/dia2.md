@@ -276,6 +276,35 @@ Cualquier prueba se debe centrar en un UNICO ASPECTO del sistema. Para qué? par
 - Sistema (End-to-End)  Se centra en el COMPORTAMIENTO del sistema en su conjunto
   - Aceptación
 
+TREN:
+    Motor
+    Ruedas
+    Sistema de frenos
+    Asientos
+
+    Motor, lo monto en un bastidor de pruebas, y lo pruebo... le meto corriente y miro si gira.
+        PRUEBA UNITARIA funcional
+        CARGA
+        ESTRES
+    Asiento
+        PRUEBAS UNITARIAS 
+            Prueba de seguridad (meterles fuego), sujeta a la persona
+            Estres
+            Experiencia de usuario
+    Frenos
+        Lo monto en un bastidor... le meto corriente y veo que las pinzas se cierran
+    Ruedas, las monto en un eje provisional... le pego un viaje con la mano... y a ver si giran.
+
+    Frenos x Ruedas
+        PRUEBA DE INTEGRACION
+        Monto un bastidor... pongo el sistema de frenos... y en medio de las pinzas, la rueda.
+            Le meto corriente y miro si la rueda frena.
+
+    Sistema
+        Con el tren completo, digo: Lo arranco y a ver si va pa'lante!
+        Y resulta que va pa'tras.
+        PROBLEMA DE COMPORTAMIENTO
+
 ### En base al procedimiento de ejecución:
 
 - Dinámicas: Las que requieren ejecutar código:     Identifican FALLOS
@@ -289,11 +318,11 @@ Cualquier prueba se debe centrar en un UNICO ASPECTO del sistema. Para qué? par
 Pruebas de caja blanca: Conocemos el código fuente
 Pruebas de caja negra: No conocemos el código fuente
 
-## Metodologías de pruebas
+## Metodologías de desarrollo de software basadas en las pruebas
 
 ### Test-First
 
-Desarrollo primero las pruebas y luego el código.
+Desarrollo primero diseño las pruebas y luego el código y luego ejecuto las pruebas.
 
 ### TDD: Test Driven Development
 
@@ -328,11 +357,11 @@ Pruebas de aceptación. Pruebas que se hacen para validar que el sistema cumple 
     CAPA DE NEGOCIO             DTO                                 Servicio        Lógica de negocio
     CAPA DE CONTROLADOR         DTO2                                Controlador     Lógica de exposición
 
-    AnimalitosRepositorio   <   AnimalitosServicio      <    AnimalitosRestControlerV1
+    AnimalitosRepositorio   <   AnimalitosServicio      <    AnimalitosRestControllerV1
         Animalitos                DatosAnimalitos               DatosNuevoAnimalitoRestV1
                                   DatosNuevoAnimalito           DatosAnimalitoRestV1
 
-                                                        <    AnimalitosRestControlerV2
+                                                        <    AnimalitosRestControllerV2
                                                                 DatosNuevoAnimalitoRestV2
                                                                 DatosAnimalitoRestV2
         
@@ -417,11 +446,11 @@ En el mundo del testing también tenemos un acrónimo guay para los principios d
 
 # Comunicaciones entre servicios
 
-## Síncronas
+## Síncronas: HTTP
 
 El emisor (cliente) espera la respuesta del receptor (servidor) antes de continuar con su ejecución.
 
-## Asíncronas
+## Asíncronas: WSocket
 
 El emisor (cliente) no espera la respuesta del receptor (servidor) antes de continuar con su ejecución.
 
@@ -514,3 +543,4 @@ Formulario Nuevo Cliente                                       *                
     La BBDD también tiene su responsabilidad... y su lógica.
     Y si alguien le da por pasar como el culo de tu puñetero programa... y quiera hacer una query directa a la bbdd está leyendo un dato inválido
     La BBDD es el último garante del dato.
+    

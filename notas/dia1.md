@@ -382,7 +382,7 @@ Un conjunto de PRINCIPIOS que nos ayudan a desarrollar software fácil de manten
         Si tengo un componente que hereda de otro... puedo sustituir el componente padre por el hijo sin que la aplicación se entere.
 - I: Interface Segregation Principle
         Mejor muchas interfaces de propósito específico que una interfaz de propósito general.
-- D
+- D: Dependency Inversion Principle
 
 ---
 
